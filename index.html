@@ -1,0 +1,81 @@
+<html>
+<head>
+        <title>User details</title>
+        <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+           
+</head>
+<body>
+         <form id="form" action="/add_data"  method="post">
+        <lable for="name" >Full name</lable>
+        <input type="text" name="name" id="name">
+        <lable for ="mail" >Email</lable>
+        <input type="email"name="email" id="email">
+        <lable for="phone">Phone number</lable>
+        <input type='tel' name="phone" id="phone">
+        <input type='submit' value="Submit">
+
+        <ul id="items" >
+            
+        
+        </ul>
+
+
+
+
+    </form>
+
+     <script>
+           
+    window.addEventListener("DOMContentLoaded",(e) => {
+        e.preventDefault();
+        const list=document.getElementById('items');
+        axios.get("http://localhost:8080/get_users")
+        .then((resp)=>{
+        for(let i=0;i<resp.data.allUsers.length;i++){
+            //console.log(resp.data.allUsers[i])
+            showUser(resp.data.allUsers[i])
+        }
+        })
+        function showUser(a){
+            if(localStorage.getItem(a.gmail)!=null){
+                removeUserFromScreen(a.id)
+            }
+
+            const parentNode=document.getElementById('items');
+            const childNode=`<li id=${a.id}>${a.name} - ${a.gmail} - ${a.phone}
+                <button onclick=deleteUser('${a.id}')>Delete</button>   
+                </li>`
+
+            parentNode.innerHTML=parentNode.innerHTML+childNode;
+            
+
+            }
+        })
+        function deleteUser(btnId) {
+            console.log(btnId)
+            axios.delete(`http://localhost:8080/delete-users/${btnId}`)
+                .then((resp) =>{
+                    console.log(resp)
+                    removeUserFromScreen(btnId);
+                })
+        
+            .catch(err =>console.log(err))
+            
+          }
+        
+        function removeUserFromScreen(id){
+            const parentNode=document.getElementById('items');
+            const childNodeToBeDeleted=document.getElementById('id');
+            if(childNodeToBeDeleted){
+                parentNode.removeChild(childNodeToBeDeleted);
+                console.log('remove user from screen')
+            }
+        }
+          
+        
+    
+        
+    </script>
+
+    </body>
+</html>
